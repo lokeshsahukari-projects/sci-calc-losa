@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090f2b">
+<title>Glass Scientific Calculator</title>
+<style>
+:root{color-scheme:dark;--text:#f4f6ff;--muted:#aab7e9;--line:rgba(160,183,255,.22);--panel:rgba(20,31,75,.54);--accent:#536bff;--pink:#ff4eaa}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(ellipse at 15% 10%,#194caa 0,transparent 34%),radial-gradient(ellipse at 88% 18%,#55247f 0,transparent 30%),radial-gradient(ellipse at 50% 100%,#171d68 0,transparent 45%),#070b20;display:grid;place-items:center;padding:26px;overflow-x:hidden}
+body:before,body:after{content:"";position:fixed;width:260px;height:260px;border-radius:50%;filter:blur(85px);opacity:.28;pointer-events:none;z-index:-1}body:before{background:#1f9bff;top:8%;left:-70px}body:after{background:#b13dff;right:-70px;bottom:0}
+.app{width:min(1160px,100%);border:1px solid rgba(183,198,255,.3);background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.035));box-shadow:0 30px 90px #0008,inset 0 1px 0 #ffffff20;backdrop-filter:blur(24px);border-radius:28px;padding:25px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:13px}.logo{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#657dff,#267dff);box-shadow:0 8px 24px #315dff55;font-size:25px}.brand h1{font-size:clamp(20px,3vw,27px);margin:0;letter-spacing:-.7px}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px;letter-spacing:.3px}.head-tools{display:flex;gap:10px;align-items:center}.mode{display:flex;padding:4px;border-radius:30px;background:#070e2b80;border:1px solid var(--line)}button{font:inherit;color:inherit;cursor:pointer;transition:transform .13s ease,border-color .15s,background .15s,filter .15s}button:active{transform:scale(.96)}.mode button{border:0;background:transparent;color:#c7d0ff;padding:9px 15px;border-radius:24px;font-size:12px;font-weight:750;letter-spacing:.4px}.mode button.active{background:linear-gradient(135deg,#367bff,#6549f5);color:white;box-shadow:0 4px 14px #4b5eff60}.icon-btn{height:42px;width:42px;border:1px solid var(--line);background:#101b4480;border-radius:14px;font-size:19px}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 275px;gap:22px}.calculator{min-width:0}.display{min-height:145px;border:1px solid rgba(88,133,255,.5);border-radius:22px;padding:22px 24px;background:linear-gradient(145deg,rgba(4,13,39,.78),rgba(7,16,44,.65));box-shadow:inset 0 1px 15px #0003;margin-bottom:14px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}.expression{min-height:28px;color:#9caeff;font-size:clamp(17px,2vw,22px);text-align:right;overflow-wrap:anywhere}.result{font-size:clamp(34px,5vw,52px);font-weight:550;letter-spacing:-1.6px;text-align:right;overflow-wrap:anywhere;line-height:1.15}.status{font-size:12px;color:#ff9acb;min-height:16px;text-align:right}.keys{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}.key{min-height:54px;border:1px solid rgba(156,180,255,.25);border-radius:15px;background:linear-gradient(145deg,rgba(71,91,158,.43),rgba(20,31,71,.78));box-shadow:inset 0 1px 0 #ffffff12,0 5px 12px #0001;font-size:clamp(13px,1.8vw,18px);font-weight:550}.key:hover{background:linear-gradient(145deg,rgba(94,121,221,.62),rgba(39,51,110,.9));border-color:#8aa4ff88}.key.fn{color:#c3ceff}.key.op{background:linear-gradient(145deg,#243c9c99,#211d66b8);color:#aebcff}.key.danger{background:linear-gradient(145deg,#9d276d9c,#591b55a8);border-color:#ff65b77a}.key.equals{background:linear-gradient(135deg,#168dff,#6342ff);border-color:#73aaff;box-shadow:0 8px 22px #395bff55;font-size:25px}.key.wide{grid-column:span 2}.key.tall{grid-row:span 2}.history{border:1px solid var(--line);background:rgba(14,24,61,.5);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;min-height:100%}.history-head{display:flex;align-items:center;justify-content:space-between;padding:17px 18px;border-bottom:1px solid var(--line);font-weight:700}.history-head button{background:transparent;border:0;color:#bdcaff;font-size:18px}.history-list{padding:4px 15px;overflow:auto;max-height:585px}.history-item{padding:14px 2px;border-bottom:1px solid #ffffff13;cursor:pointer}.history-item:hover .hist-expr{color:white}.hist-row{display:flex;justify-content:space-between;gap:8px;align-items:center}.hist-expr{color:#d4dcff;font-size:14px;overflow-wrap:anywhere}.hist-result{color:#9eafff;font-weight:650;white-space:nowrap}.hist-time{color:#8495cb;font-size:11px;margin-top:7px}.empty{color:#8190bf;font-size:13px;padding:20px 2px;line-height:1.6}.footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#9aa9df;font-size:12px;margin:16px 4px 0}.footer strong{color:#c8d3ff;font-weight:600}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#192653;border:1px solid var(--line);padding:10px 16px;border-radius:12px;color:white;display:none;box-shadow:0 8px 30px #0005;font-size:13px}
+.light{--text:#172344;--muted:#5b6a95;--line:rgba(74,98,170,.22);background:radial-gradient(ellipse at 15% 10%,#b5d8ff 0,transparent 35%),radial-gradient(ellipse at 90% 15%,#e3c8ff 0,transparent 30%),#e9efff;color:var(--text);color-scheme:light}.light .app{background:linear-gradient(135deg,#ffffffb8,#ffffff65);box-shadow:0 30px 90px #3a4c8520,inset 0 1px 0 #fff}.light .display{background:#ffffff9c}.light .mode{background:#dbe5ff99}.light .mode button{color:#52618c}.light .icon-btn,.light .history{background:#ffffff78}.light .key{background:linear-gradient(145deg,#ffffffd9,#dce5ffb8);color:#24345f}.light .key.fn{color:#4e5da0}.light .key.op{background:linear-gradient(145deg,#dbe3ff,#cbd5ff);color:#354ba7}.light .key.danger{background:linear-gradient(145deg,#ffd8ed,#ffc3e1);color:#8b245f}.light .key.equals{background:linear-gradient(135deg,#3985ff,#7550ed);color:white}.light .expression{color:#5367cb}.light .hist-expr{color:#34456f}.light .hist-result{color:#435ac4}.light .hist-time,.light .empty,.light .footer{color:#65739e}.light .footer strong{color:#364b8e}
+@media(max-width:850px){.main{grid-template-columns:1fr}.history{min-height:0}.history-list{max-height:230px}.head-tools{flex-wrap:wrap;justify-content:flex-end}.app{padding:17px}}@media(max-width:520px){body{padding:10px}.app{padding:13px;border-radius:20px}header{align-items:flex-start;flex-direction:column}.head-tools{width:100%;justify-content:space-between}.display{padding:17px;min-height:120px}.keys{gap:6px}.key{min-height:47px;border-radius:11px;font-size:13px}.brand p{font-size:12px}.footer{font-size:11px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">▦</div><div><h1>Scientific Calculator</h1><p>Calculate&nbsp; • &nbsp;Explore&nbsp; • &nbsp;Achieve</p></div></div>
+  <div class="head-tools">
+    <div class="mode" aria-label="Angle mode"><button class="active" data-mode="DEG">DEG</button><button data-mode="RAD">RAD</button><button data-mode="GRAD">GRAD</button></div>
+    <button class="icon-btn" id="settings" title="Settings">⚙</button><button class="icon-btn" id="theme" title="Toggle light/dark theme">☼</button>
+  </div>
+</header>
+<div class="main">
+<section class="calculator">
+  <div class="display"><div class="expression" id="expression">Ready when you are</div><div class="result" id="result">0</div><div class="status" id="status" aria-live="polite"></div></div>
+  <div class="keys" id="keys">
+    <button class="key op" data-action="second">2nd</button><button class="key fn" data-insert="(">(</button><button class="key fn" data-insert=")">)</button><button class="key fn" data-insert="π">π</button><button class="key fn" data-insert="e">e</button><button class="key danger" data-action="clear">AC</button><button class="key danger" data-action="back">⌫</button>
+    <button class="key fn" data-fn="sin">sin</button><button class="key fn" data-fn="cos">cos</button><button class="key fn" data-fn="tan">tan</button><button class="key fn" data-fn="log">log</button><button class="key fn" data-fn="ln">ln</button><button class="key fn" data-fn="sqrt">√</button><button class="key fn" data-fn="cbrt">∛</button>
+    <button class="key fn" data-fn="asin">sin⁻¹</button><button class="key fn" data-fn="acos">cos⁻¹</button><button class="key fn" data-fn="atan">tan⁻¹</button><button class="key fn" data-insert="^2">x²</button><button class="key fn" data-insert="^3">x³</button><button class="key fn" data-insert="^">xʸ</button><button class="key fn" data-insert="!">x!</button>
+    <button class="key" data-insert="7">7</button><button class="key" data-insert="8">8</button><button class="key" data-insert="9">9</button><button class="key op" data-insert="÷">÷</button><button class="key op" data-insert="×">×</button><button class="key op" data-insert="-">−</button><button class="key op" data-insert="+">+</button>
+    <button class="key" data-insert="4">4</button><button class="key" data-insert="5">5</button><button class="key" data-insert="6">6</button><button class="key op" data-insert="%">%</button><button class="key fn" data-insert="Ans">Ans</button><button class="key fn" data-action="memory-clear">MC</button><button class="key fn" data-action="memory-recall">MR</button>
+    <button class="key" data-insert="1">1</button><button class="key" data-insert="2">2</button><button class="key" data-insert="3">3</button><button class="key fn" data-insert="±">±</button><button class="key fn" data-action="memory-add">M+</button><button class="key fn" data-action="memory-sub">M−</button><button class="key equals tall" data-action="equals">=</button>
+    <button class="key" data-insert="0">0</button><button class="key" data-insert=".">.</button><button class="key fn" data-insert="EXP">EXP</button><button class="key fn" data-insert="|">abs</button><button class="key fn" data-insert="10^(">10ˣ</button><button class="key fn" data-insert="e^(">eˣ</button>
+  </div>
+</section>
+<aside class="history"><div class="history-head"><span>◷ &nbsp; History</span><button id="clear-history" title="Clear history">♲</button></div><div class="history-list" id="history"><div class="empty">Your calculations will appear here. Tap a result to reuse it.</div></div></aside>
+</div>
+<div class="footer"><span>⌨ Tip: use your keyboard • <strong>Enter</strong> to calculate • <strong>Esc</strong> to clear</span><span><strong>Better Calculations ✨ Brighter Ideas</strong></span></div>
+</div><div class="toast" id="toast"></div>
+<script>
+(() => {
+const $=s=>document.querySelector(s), exprEl=$('#expression'), resultEl=$('#result'), statusEl=$('#status'), keys=$('#keys'), historyEl=$('#history');
+let expr='', answer=0, memory=0, angleMode='DEG', second=false, justSolved=false;
+let history=[];
+try{history=JSON.parse(localStorage.getItem('glassCalcHistory')||'[]')}catch{}
+function fmt(n){if(!Number.isFinite(n))throw Error(n===Infinity||n===-Infinity?'Result is not finite':'Invalid calculation');if(Math.abs(n)<1e-12)n=0;return Number(n.toPrecision(12)).toString()}
+function render(){exprEl.textContent=expr||'Ready when you are';resultEl.textContent=expr?'…':'0';statusEl.textContent=''}
+function insert(s){if(justSolved && /[0-9.(πe]/.test(s[0]) && !['^2','^3','!'].includes(s)){expr=''}justSolved=false;if(s==='±'){if(!expr){expr='-';}else{expr=`(-1)*(${expr})`}}else if(s==='EXP'){expr+='×10^('}else if(s==='|'){expr+='abs('}else{expr+=s}render()}
+function clear(){expr='';justSolved=false;render()}
+function back(){expr=expr.slice(0,-1);justSolved=false;render()}
+function toRad(x){return angleMode==='DEG'?x*Math.PI/180:angleMode==='GRAD'?x*Math.PI/200:x}
+function fromRad(x){return angleMode==='DEG'?x*180/Math.PI:angleMode==='GRAD'?x*200/Math.PI:x}
+function factorial(n){if(n<0||!Number.isInteger(n)||n>170)throw Error('Factorial needs an integer from 0 to 170');let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function tokenize(input){
+ let s=input.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/π/g,'pi').replace(/Ans/g,'ans').replace(/\s/g,'');
+ const tokens=[];let i=0;
+ while(i<s.length){let rest=s.slice(i),m;
+  if((m=rest.match(/^(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/i))){tokens.push({t:'num',v:Number(m[0])});i+=m[0].length;continue}
+  if((m=rest.match(/^[a-z]+/i))){tokens.push({t:'id',v:m[0].toLowerCase()});i+=m[0].length;continue}
+  if('+-*/^()%!'.includes(s[i])){tokens.push({t:s[i],v:s[i]});i++;continue}
+  throw Error('Unexpected character: '+s[i]);
+ }
+ // implicit multiplication, e.g. 2π, 2(3), (2)(3)
+ const out=[];
+ for(let j=0;j<tokens.length;j++){
+  const a=tokens[j],b=tokens[j+1];out.push(a);
+  const left=a.t==='num'||a.t===')'||a.t==='!'||(a.t==='id'&&['pi','e','ans'].includes(a.v));
+  const right=(b&&(b.t==='num'||b.t==='('||(b.t==='id'&&['pi','e','ans'].includes(b.v))));
+  if(left&&right)out.push({t:'*',v:'*'});
+ }
+ return out;
+}
+function calculate(input){
+ const ts=tokenize(input);let p=0;
+ const peek=()=>ts[p]||{t:'eof'},eat=t=>{if(peek().t===t){p++;return true}return false};
+ function primary(){
+  if(eat('+'))return unary();
+  if(eat('-'))return -unary();
+  if(eat('(')){let v=add();if(!eat(')'))throw Error('Missing closing bracket');return v}
+  const t=peek();
+  if(t.t==='num'){p++;return t.v}
+  if(t.t==='id'){p++;let name=t.v;
+   if(['pi','e','ans'].includes(name))return name==='pi'?Math.PI:name==='e'?Math.E:answer;
+   if(!eat('('))throw Error('Use '+name+'(value)');
+   const x=add();if(!eat(')'))throw Error('Missing closing bracket after '+name);
+   const f={
+    sin:x=>Math.sin(toRad(x)),cos:x=>Math.cos(toRad(x)),tan:x=>{const c=Math.cos(toRad(x));if(Math.abs(c)<1e-12)throw Error('tan is undefined at this angle');return Math.tan(toRad(x))},
+    asin:x=>fromRad(Math.asin(x)),acos:x=>fromRad(Math.acos(x)),atan:x=>fromRad(Math.atan(x)),
+    sqrt:x=>Math.sqrt(x),cbrt:x=>Math.cbrt(x),log:x=>Math.log10(x),ln:x=>Math.log(x),abs:x=>Math.abs(x),
+    exp:x=>Math.exp(x),floor:x=>Math.floor(x),ceil:x=>Math.ceil(x)
+   }[name];if(!f)throw Error('Unknown function: '+name);return f(x)
+  }
+  throw Error('Check the expression near '+(t.v||'the end'));
+ }
+ function postfix(){let v=primary();while(eat('!'))v=factorial(v);return v}
+ function power(){let v=postfix();if(eat('^'))v=Math.pow(v,unary());return v}
+ function unary(){return power()}
+ function mul(){let v=unary();while(true){if(eat('*'))v*=unary();else if(eat('/')){const d=unary();if(d===0)throw Error('Cannot divide by zero');v/=d}else if(eat('%'))v%=unary();else break}return v}
+ function add(){let v=mul();while(true){if(eat('+'))v+=mul();else if(eat('-'))v-=mul();else break}return v}
+ if(!ts.length)throw Error('Enter a calculation first');const val=add();if(p<ts.length)throw Error('Check the expression');return val
+}
+function saveHistory(expression,value){history.unshift({expression,value,time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})});history=history.slice(0,40);try{localStorage.setItem('glassCalcHistory',JSON.stringify(history))}catch{}drawHistory()}
+function drawHistory(){if(!history.length){historyEl.innerHTML='<div class="empty">Your calculations will appear here. Tap a result to reuse it.</div>';return}
+ historyEl.innerHTML=history.map((h,i)=>`<div class="history-item" data-history="${i}" title="Click to reuse this result"><div class="hist-row"><span class="hist-expr">${escapeHtml(h.expression)}</span><span class="hist-result">= ${escapeHtml(h.value)}</span></div><div class="hist-time">${escapeHtml(h.time||'Previous result')}</div></div>`).join('')}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function solve(){try{if(!expr.trim())return;const original=expr;const value=calculate(expr);answer=value;const pretty=fmt(value);exprEl.textContent=original;resultEl.textContent=pretty;statusEl.textContent='';saveHistory(original,pretty);expr=pretty;justSolved=true}catch(e){statusEl.textContent=e.message||'Invalid expression';resultEl.textContent='Error'}}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',1800)}
+keys.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.insert!==undefined){insert(b.dataset.insert);return}
+ if(b.dataset.fn){insert(b.dataset.fn+'(');return}
+ switch(b.dataset.action){
+ case 'clear':clear();break;case 'back':back();break;case 'equals':solve();break;
+ case 'second':second=!second;b.textContent=second?'1st':'2nd';keys.querySelector('[data-fn="sin"]').textContent=second?'sinh':'sin';keys.querySelector('[data-fn="cos"]').textContent=second?'cosh':'cos';keys.querySelector('[data-fn="tan"]').textContent=second?'tanh':'tan';break;
+ case 'memory-clear':memory=0;toast('Memory cleared');break;case 'memory-recall':insert(fmt(memory));break;
+ case 'memory-add':try{memory+=expr?calculate(expr):answer;toast('Added to memory')}catch{toast('Enter a valid value first')}break;
+ case 'memory-sub':try{memory-=expr?calculate(expr):answer;toast('Subtracted from memory')}catch{toast('Enter a valid value first')}break;
+ }
+});
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{angleMode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));toast('Angle mode: '+angleMode)}));
+$('#theme').addEventListener('click',()=>document.body.classList.toggle('light'));
+$('#settings').addEventListener('click',()=>toast('Angle mode is above • Theme uses the sun button'));
+$('#clear-history').addEventListener('click',()=>{history=[];try{localStorage.removeItem('glassCalcHistory')}catch{}drawHistory();toast('History cleared')});
+historyEl.addEventListener('click',e=>{const item=e.target.closest('[data-history]');if(!item)return;const h=history[Number(item.dataset.history)];if(h){expr=h.expression;justSolved=false;exprEl.textContent=expr;resultEl.textContent=h.value;statusEl.textContent='Loaded from history'}});
+document.addEventListener('keydown',e=>{
+ if(e.ctrlKey||e.metaKey||e.altKey)return;
+ if(/^[0-9.]$/.test(e.key)){insert(e.key);return}
+ const map={'+':'+','-':'-','*':'×','/':'÷','^':'^','(': '(',')':')','%':'%','!':'!'};if(map[e.key]){e.preventDefault();insert(map[e.key]);return}
+ if(e.key==='Enter'||e.key==='='){e.preventDefault();solve()}else if(e.key==='Backspace'){back()}else if(e.key==='Escape'){clear()}else if(e.key.toLowerCase()==='p'){insert('π')}
+});
+drawHistory();render();
+})();
+</script>
+</body>
+</html>
